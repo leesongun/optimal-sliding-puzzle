@@ -1,4 +1,4 @@
-use astar::{Action, State};
+use astar::{Action, Builder, State};
 use std::cmp::Ordering;
 
 #[derive(PartialEq, Eq)]
@@ -30,9 +30,9 @@ impl Ord for NodeInfo {
 fn astar(s: &State, t: &State) -> u8 {
     use std::collections::{BinaryHeap, HashMap};
     let mut tosee = BinaryHeap::new();
-    let mut dists: HashMap<State, u8> = HashMap::new();
+    let mut dists: HashMap<State, u8, Builder> = HashMap::with_hasher(Builder::default());
     tosee.push(NodeInfo {
-        heuristic: s.manhattan(t) as u8,
+        heuristic: s.manhattan(t),
         node: *s,
     });
     dists.insert(*s, 1);
@@ -47,12 +47,12 @@ fn astar(s: &State, t: &State) -> u8 {
         }
         let pathlength = *dists.get(&node.node).unwrap();
         if node.node == *t {
+            println!("{}", count);
             return pathlength - 1;
         }
         for i in &Action::VALUES {
-            let mut x = node.node;
-            if x.act(*i) {
-                let d = t.manhattan(&x) as u8;
+            if let Some(x) = node.node + *i {
+                let d = t.manhattan(&x);
                 if let Some(&prev) = dists.get(&x) {
                     if prev <= pathlength + 1 {
                         continue;

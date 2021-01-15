@@ -11,4 +11,3 @@ default = ["rand"]
 
 [dependencies]
 rand = { version = "0.8.2", optional = true, features = ["small_rng"] }
-seahash = "4.0.1"
