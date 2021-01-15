@@ -39,6 +39,7 @@ fn astar(s: &State, t: &State) -> u8 {
         heuristic: heur(s, t),
         node: *s,
     });
+    //actually it is enough to store first 56 bits
     dists.insert(s.pos, 1);
     let mut count = 0;
     while let Some(node) = tosee.pop() {

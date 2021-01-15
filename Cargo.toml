@@ -11,3 +11,6 @@ default = ["rand"]
 
 [dependencies]
 rand = { version = "0.8.2", optional = true, features = ["small_rng"] }
+
+[dev-dependencies]
+quickcheck = "1.0.2"

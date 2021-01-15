@@ -45,12 +45,6 @@ impl State {
         }
         true
     }
-    const fn getx(&self, ind: u64) -> u64 {
-        self.val >> ind * 4 & 3
-    }
-    const fn gety(&self, ind: u64) -> u64 {
-        self.val >> ind * 4 + 2 & 3
-    }
     pub fn act(&mut self, a: Action) -> bool {
         let curpos = get(self.pos, 0);
         let posdiff = a as u64;
@@ -71,16 +65,25 @@ impl State {
     }
     /// manhattan distance
     #[must_use]
-    pub fn manhattan(&self, other: &Self) -> u8 {
-        (1..16)
-            .map(|i| {
-                (self.getx(i) as i8 - other.getx(i) as i8).abs()
-                    + (self.gety(i) as i8 - other.gety(i) as i8).abs()
-            })
-            .sum::<i8>() as u8
+    pub const fn manhattan(&self, other: &Self) -> u8 {
+        //should be incrementally updated?
+        let xs = self.pos & 0x3333_3333_3333_3330;
+        let ys = self.pos & 0xCCCC_CCCC_CCCC_CCC0;
+        let xo = other.pos & 0x3333_3333_3333_3330;
+        let yo = other.pos & 0xCCCC_CCCC_CCCC_CCC0;
+        let xs = xs | xs >> 1 & xs >> 2;
+        let ys = ys | ys >> 1 & ys >> 2;
+        let xo = xo | xo >> 1 & xo >> 2;
+        let yo = yo | yo >> 1 & yo >> 2;
+        let xs = xs | xs >> 1 & 0x1111_1111_1111_1111;
+        let ys = ys | ys >> 1 & 0x4444_4444_4444_4444;
+        let xo = xo | xo >> 1 & 0x1111_1111_1111_1111;
+        let yo = yo | yo >> 1 & 0x4444_4444_4444_4444;
+        ((xs ^ xo).count_ones() + (ys ^ yo).count_ones()) as u8
     }
     /// inversion distance
     pub fn inversion(&self, other: &Self) -> u8 {
+        //should be incrementally updated?
         let mut vert = 0;
         let mut horz = 0;
         let s = (self.pos & 0x3333_3333_3333_3333) << 2 | (self.pos & 0xCCCC_CCCC_CCCC_CCCC) >> 2;
@@ -104,6 +107,16 @@ impl State {
     pub fn walking(&self) -> u8 {
         unimplemented!()
     }
+    //also provide update infos
+    /*
+    pub fn moves<B,F,R>(self, init: B, mut f: F) -> R
+    where
+        Self: Sized,
+        F: FnMut(B, Self) -> R,
+        R: core::ops::Try<Ok = B>,
+    {
+        unimplemented!()
+    }*/
 }
 
 impl core::fmt::Display for State {

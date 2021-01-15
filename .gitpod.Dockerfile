@@ -5,5 +5,4 @@ FROM gitpod/workspace-full
 # RUN brew install bastet
 #
 # More information: https://www.gitpod.io/docs/config-docker/
-RUN rustup component add rustfmt
-RUN rustup component add clippy
+RUN rustup component add rustfmt clippy
