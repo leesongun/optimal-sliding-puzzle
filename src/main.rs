@@ -9,26 +9,19 @@ struct NodeInfo {
 
 impl PartialOrd for NodeInfo {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.heuristic == other.heuristic {
-            Some(self.node.pos.cmp(&other.node.pos))
-        } else {
-            Some(other.heuristic.cmp(&self.heuristic))
-        }
+        (other.heuristic, self.node.pos).partial_cmp(&(self.heuristic, other.node.pos))
     }
 }
 
 impl Ord for NodeInfo {
     fn cmp(&self, other: &Self) -> Ordering {
-        if self.heuristic == other.heuristic {
-            self.node.pos.cmp(&other.node.pos)
-        } else {
-            other.heuristic.cmp(&self.heuristic)
-        }
+        (other.heuristic, self.node.pos).cmp(&(self.heuristic, other.node.pos))
     }
 }
 
 fn heur(s: &State, t: &State) -> u8 {
-    std::cmp::max(s.manhattan(t), s.inversion(t))
+    let a = (s.manhattan(t), s.inversion(t));
+    std::cmp::max(a.0 .0, a.1 .0) + std::cmp::max(a.0 .1, a.1 .1)
 }
 
 fn astar(s: &State, t: &State) -> u8 {
