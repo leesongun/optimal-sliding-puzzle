@@ -69,6 +69,7 @@ impl State {
         self.val ^= tarval << 4 * curpos ^ tarval << 4 * tarpos;
         true
     }
+    /// manhattan distance
     #[must_use]
     pub fn manhattan(&self, other: &Self) -> u8 {
         (1..16)
@@ -77,6 +78,31 @@ impl State {
                     + (self.gety(i) as i8 - other.gety(i) as i8).abs()
             })
             .sum::<i8>() as u8
+    }
+    /// inversion distance
+    pub fn inversion(&self, other: &Self) -> u8 {
+        let mut vert = 0;
+        let mut horz = 0;
+        let s = (self.pos & 0x3333_3333_3333_3333) << 2 | (self.pos & 0xCCCC_CCCC_CCCC_CCCC) >> 2;
+        let o = (other.pos & 0x3333_3333_3333_3333) << 2 | (other.pos & 0xCCCC_CCCC_CCCC_CCCC) >> 2;
+        //while O(n lg n) and even O(n sqrt lg n) algorithms are available,
+        //we just count inversions naively
+        for i in 1..16 {
+            for j in i..16 {
+                if (get(self.pos, i) > get(other.pos, j)) ^ (get(self.pos, j) > get(other.pos, j)) {
+                    vert += 1
+                };
+                if (get(s, i) > get(s, j)) ^ (get(o, j) > get(o, j)) {
+                    horz += 1
+                };
+            }
+        }
+        vert / 3 + vert % 3 + horz / 3 + horz % 3
+    }
+    /// aditive pattern database
+    /// decompose to "horizontal" and "vertical" moves
+    pub fn walking(&self) -> u8 {
+        unimplemented!()
     }
 }
 

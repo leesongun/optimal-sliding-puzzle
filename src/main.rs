@@ -27,45 +27,49 @@ impl Ord for NodeInfo {
     }
 }
 
+fn heur(s: &State, t: &State) -> u8 {
+    std::cmp::max(s.manhattan(t), s.inversion(t))
+}
+
 fn astar(s: &State, t: &State) -> u8 {
     use std::collections::{BinaryHeap, HashMap};
     let mut tosee = BinaryHeap::new();
-    let mut dists: HashMap<State, u8, Builder> = HashMap::with_hasher(Builder::default());
+    let mut dists: HashMap<u64, u8, Builder> = HashMap::with_hasher(Builder::default());
     tosee.push(NodeInfo {
-        heuristic: s.manhattan(t),
+        heuristic: heur(s, t),
         node: *s,
     });
-    dists.insert(*s, 1);
+    dists.insert(s.pos, 1);
     let mut count = 0;
     while let Some(node) = tosee.pop() {
-        if *dists.get(&node.node).unwrap() == 0 {
+        if *dists.get(&node.node.pos).unwrap() == 0 {
             continue;
         }
         count += 1;
         if count % 1000000 == 0 {
             println!("{}", count);
         }
-        let pathlength = *dists.get(&node.node).unwrap();
+        let pathlength = *dists.get(&node.node.pos).unwrap();
         if node.node == *t {
             println!("{}", count);
             return pathlength - 1;
         }
         for i in &Action::VALUES {
             if let Some(x) = node.node + *i {
-                let d = t.manhattan(&x);
-                if let Some(&prev) = dists.get(&x) {
+                let d = heur(t, &x);
+                if let Some(&prev) = dists.get(&x.pos) {
                     if prev <= pathlength + 1 {
                         continue;
                     }
                 }
-                dists.insert(x, pathlength + 1);
+                dists.insert(x.pos, pathlength + 1);
                 tosee.push(NodeInfo {
                     heuristic: pathlength + 1 + d,
                     node: x,
                 });
             }
         }
-        dists.insert(node.node, 0);
+        dists.insert(node.node.pos, 0);
     }
     255
 }
