@@ -29,7 +29,7 @@ impl State {
             arr[i] = arr[j];
             arr[j] = i;
         }
-        parity ^= arr[0] & 1 != arr[0] & 4;
+        parity ^= (arr[0] ^ arr[0] >> 2) & 1 != 0;
         if !parity {
             arr.swap(14, 15);
         }
@@ -93,10 +93,10 @@ impl State {
         //we just count inversions naively
         for i in 1..16 {
             for j in i..16 {
-                if (get(self.pos, i) > get(other.pos, j)) ^ (get(self.pos, j) > get(other.pos, j)) {
+                if (get(self.pos, i) > get(self.pos, j)) ^ (get(other.pos, i) > get(other.pos, j)) {
                     y += 1;
                 }
-                if (get(s, i) > get(s, j)) ^ (get(o, j) > get(o, j)) {
+                if (get(s, i) > get(s, j)) ^ (get(o, i) > get(o, j)) {
                     x += 1;
                 }
             }

@@ -41,11 +41,11 @@ fn astar(s: &State, t: &State) -> u8 {
     dists.insert(s.pos, 1);
     let mut count = 0;
     while let Some(node) = tosee.pop() {
-        if *dists.get(&node.node.pos).unwrap() == 0 {
+        let pathlength = *dists.get(&node.node.pos).unwrap();
+        if pathlength == 0 {
             continue;
         }
         count += 1;
-        let pathlength = *dists.get(&node.node.pos).unwrap();
         if node.node == *t {
             println!("{}", count);
             return pathlength - 1;
@@ -69,14 +69,11 @@ fn astar(s: &State, t: &State) -> u8 {
     }
     255
 }
+
 fn main() {
-    //use rand::SeedableRng;
-    //let mut rng = rand::rngs::SmallRng::from_entropy();
-    //let a = State::rand(&mut rng);
-    for i in 0..100 {
-        println!("{}", i);
-        let a = State::new(astar::INSTANCES[i]);
-        let b = astar(&a, &State::default());
-        assert_eq!(b, astar::ACTUAL[i]);
-    }
+    use rand::SeedableRng;
+    let mut rng = rand::rngs::SmallRng::from_entropy();
+    let a = State::rand(&mut rng);
+    let b = astar(&a, &State::default());
+    println!("{}", b);
 }
