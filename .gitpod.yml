@@ -3,4 +3,5 @@ image:
 
 tasks:
   - init: cargo build
+    before: rustup component add rustfmt clippy
     command: cargo watch -x run

@@ -1,3 +1,4 @@
+#![allow(clippy::precedence)]
 use super::Action;
 
 #[derive(Debug, Copy, Clone)]
