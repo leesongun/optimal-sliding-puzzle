@@ -65,7 +65,7 @@ impl State {
     }
     /// manhattan distance
     #[must_use]
-    pub const fn manhattan(&self, other: &Self) -> (u8, u8) {
+    pub const fn manhattan(&self, other: &Self) -> [u8; 2] {
         //should be incrementally updated?
         let xs = self.pos & 0x3333_3333_3333_3330;
         let ys = self.pos & 0xCCCC_CCCC_CCCC_CCC0;
@@ -79,10 +79,10 @@ impl State {
         let ys = ys | ys >> 1 & 0x4444_4444_4444_4444;
         let xo = xo | xo >> 1 & 0x1111_1111_1111_1111;
         let yo = yo | yo >> 1 & 0x4444_4444_4444_4444;
-        ((xs ^ xo).count_ones() as u8, (ys ^ yo).count_ones() as u8)
+        [(xs ^ xo).count_ones() as u8, (ys ^ yo).count_ones() as u8]
     }
     /// inversion distance
-    pub fn inversion(&self, other: &Self) -> (u8, u8) {
+    pub fn inversion(&self, other: &Self) -> [u8; 2] {
         //should be incrementally updated?
         let mut x = 0;
         let mut y = 0;
@@ -100,7 +100,7 @@ impl State {
                 }
             }
         }
-        (x / 3 + x % 3, y / 3 + y % 3)
+        [x / 3 + x % 3, y / 3 + y % 3]
     }
     /// aditive pattern database
     /// decompose to "horizontal" and "vertical" moves

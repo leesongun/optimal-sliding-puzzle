@@ -20,8 +20,9 @@ impl Ord for NodeInfo {
 }
 
 fn heur(s: &State, t: &State) -> u8 {
-    let a = (s.manhattan(t), s.inversion(t));
-    std::cmp::max(a.0 .0, a.1 .0) + std::cmp::max(a.0 .1, a.1 .1)
+    //let a = (s.manhattan(t), s.inversion(t));
+    //std::cmp::max(a.0[0], a.1[0]) + std::cmp::max(a.0[1], a.1[1])
+    s.manhattan(t).iter().sum()
 }
 
 fn astar(s: &State, t: &State) -> u8 {
@@ -68,8 +69,9 @@ fn astar(s: &State, t: &State) -> u8 {
     255
 }
 fn main() {
-    use rand::SeedableRng;
-    let mut rng = rand::rngs::SmallRng::from_entropy();
-    let a = State::rand(&mut rng);
+    //use rand::SeedableRng;
+    //let mut rng = rand::rngs::SmallRng::from_entropy();
+    //let a = State::rand(&mut rng);
+    let a = State::new(astar::INSTANCES[0]);
     println!("{}", astar(&a, &State::default()));
 }
