@@ -70,10 +70,107 @@ fn astar(s: &State, t: &State) -> u8 {
     255
 }
 
-fn main() {
+fn idastar(s: &State, t: &State) -> u8 {
+    let mut d = heur(s, t);
+    loop {
+        let x = search(*s, t, 0, d);
+        if x == 0 {
+            return d;
+        } else {
+            d = x;
+        }
+        /*
+        if d == 255 {
+            panic!()
+        }*/
+    }
+}
+
+fn search(s: State, t: &State, p: u64, d: u8) -> u8 {
+    if s == *t {
+        return 0;
+    }
+    let h = heur(&s, t);
+    if h > d {
+        return h;
+    }
+    let mut min: u8 = 254;
+    for i in &Action::VALUES {
+        if let Some(x) = s + *i {
+            if x.val == p {
+                continue;
+            }
+            let t = search(x, t, s.val, d - 1);
+            if t == 0 {
+                return 0;
+            }
+            min = std::cmp::min(min, t);
+        }
+    }
+    min + 1
+}
+
+//bidirectional pathmax
+fn idastar_bpmx(s: &State, t: &State) -> u8 {
+    let mut d = heur(s, t);
+    loop {
+        let r = search_bpmx(*s, t, 0, d);
+        if r == 0 {
+            return d;
+        } else {
+            d = r + 2;
+            //theoretically 1, but we know parity in this case
+        }
+    }
+}
+
+//transposition table?
+fn search_bpmx(s: State, t: &State, p: u64, d: u8) -> u8 {
+    if s == *t {
+        return 0;
+    }
+    let h = heur(&s, t);
+    if h > d {
+        return h;
+    }
+    for i in &Action::VALUES {
+        if let Some(x) = s + *i {
+            if x.val == p {
+                continue;
+            }
+            let t = search_bpmx(x, t, s.val, d - 1);
+            if t == 0 {
+                return 0;
+            }
+            if t - 1 > d {
+                return t - 1;
+            }
+        }
+    }
+    d
+}
+
+fn test(i: usize) -> bool {
+    let a = State::new(astar::INSTANCES[i]);
+    let b = State::default();
+    idastar(&a, &b) == astar::ACTUAL[i]
+}
+
+fn rand() -> State {
     use rand::SeedableRng;
     let mut rng = rand::rngs::SmallRng::from_entropy();
-    let a = State::rand(&mut rng);
-    let b = astar(&a, &State::default());
-    println!("{}", b);
+    State::rand(&mut rng)
+}
+
+fn main() {
+    for i in 0..100 {
+        print!("testing instance {} : ", i);
+        use std::io::Write;
+        std::io::stdout().flush().unwrap();
+        if !test(i) {
+            println!("failed");
+        } else {
+            println!("sucess");
+        }
+    }
 }

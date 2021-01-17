@@ -82,6 +82,7 @@ impl State {
         let yo = yo | yo >> 1 & 0x4444_4444_4444_4444;
         [(xs ^ xo).count_ones() as u8, (ys ^ yo).count_ones() as u8]
     }
+    #[must_use]
     /// inversion distance
     pub fn inversion(&self, other: &Self) -> [u8; 2] {
         //should be incrementally updated?
