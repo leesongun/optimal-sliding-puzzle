@@ -1,6 +1,6 @@
 use crate::*;
 
-fn idastar(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
+pub fn idastar(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
     let mut d = h(s, t);
     loop {
         let x = search(*s, t, 0, d, &h);

@@ -1,8 +1,7 @@
-#![no_std]
+//#![no_std]
 mod hasher;
 mod markov;
 pub mod search;
-mod test;
 
 pub use markov::instances::*;
 pub use markov::Action;

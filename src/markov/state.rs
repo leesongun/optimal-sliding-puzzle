@@ -38,6 +38,7 @@ impl State {
             pos: (0..16).map(|i| (arr[i] as u64) << 4 * i).sum(),
         }
     }
+    #[must_use]
     pub fn verify(&self) -> bool {
         for i in 0..16 {
             if get(self.val, get(self.pos, i)) != i {
@@ -139,8 +140,8 @@ impl Eq for State {}
 impl Default for State {
     fn default() -> Self {
         Self {
-            pos: 0xFEDCBA9876543210,
-            val: 0xFEDCBA9876543210,
+            pos: 0xFEDC_BA98_7654_3210,
+            val: 0xFEDC_BA98_7654_3210,
         }
     }
 }
