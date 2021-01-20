@@ -17,36 +17,44 @@ impl Ord for Node {
 }
 
 pub fn astar(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
+    use std::collections::hash_map::Entry;
     use std::collections::{BinaryHeap, HashMap};
-    let mut tosee = BinaryHeap::new();
-    let mut dists: HashMap<u64, u8, Builder> = HashMap::with_hasher(Builder::default());
-    tosee.push(Node(h(s, t), *s));
+
+    let mut queue = BinaryHeap::new();
+    queue.push(Node(h(s, t), *s));
+
     //actually it is enough to store first 56 bits
+    let mut dists = HashMap::with_hasher(Builder::default());
     dists.insert(s.pos, 1);
+
     let mut count = 0;
-    while let Some(Node(_, state)) = tosee.pop() {
-        let pathlength = *dists.get(&state.pos).unwrap();
-        if pathlength == 0 {
+    while let Some(Node(_, state)) = queue.pop() {
+        let path = dists.insert(state.pos, 0).unwrap();
+        if path == 0 {
             continue;
         }
         count += 1;
         if state == *t {
             println!("{}", count);
-            return pathlength - 1;
+            return path - 1;
         }
-        for i in &Action::VALUES {
-            if let Some(x) = state + *i {
+        for &i in &Action::VALUES {
+            if let Some(x) = state + i {
                 let d = h(t, &x);
-                if let Some(&prev) = dists.get(&x.pos) {
-                    if prev <= pathlength + 1 {
-                        continue;
+                match dists.entry(x.pos) {
+                    Entry::Occupied(mut entry) => {
+                        if *entry.get() <= path + 1 {
+                            continue;
+                        }
+                        entry.insert(path + 1);
+                    }
+                    Entry::Vacant(entry) => {
+                        entry.insert(path + 1);
                     }
                 }
-                dists.insert(x.pos, pathlength + 1);
-                tosee.push(Node(pathlength + 1 + d, x));
+                queue.push(Node(path + 1 + d, x));
             }
         }
-        dists.insert(state.pos, 0);
     }
     255
 }

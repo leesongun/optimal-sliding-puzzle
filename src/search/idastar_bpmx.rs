@@ -22,8 +22,8 @@ fn search_bpmx(s: State, t: &State, p: u64, d: u8, h: &impl Fn(&State, &State) -
     if l > d {
         return l;
     }
-    for i in &Action::VALUES {
-        if let Some(x) = s + *i {
+    for &i in &Action::VALUES {
+        if let Some(x) = s + i {
             if x.val == p {
                 continue;
             }

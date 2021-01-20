@@ -25,8 +25,8 @@ fn search(s: State, t: &State, p: u64, d: u8, h: &impl Fn(&State, &State) -> u8)
         return l;
     }
     let mut min: u8 = 254;
-    for i in &Action::VALUES {
-        if let Some(x) = s + *i {
+    for &i in &Action::VALUES {
+        if let Some(x) = s + i {
             if x.val == p {
                 continue;
             }

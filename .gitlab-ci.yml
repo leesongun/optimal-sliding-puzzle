@@ -4,9 +4,7 @@ default:
 test:
   stage: test
   before_script:
-  - rustup component add rustfmt
-  - rustup component add clippy
+  - rustup component add rustfmt clippy
   script:
   - cargo test
   - cargo fmt --all -- --check
-  - cargo clippy --all-targets --all-features -- -D warnings
