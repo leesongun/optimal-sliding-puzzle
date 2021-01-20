@@ -31,6 +31,7 @@ fn old_heur(s: &State, t: &State) -> u8 {
 
 fn astar(s: &State, t: &State) -> u8 {
     use std::collections::{BinaryHeap, HashMap};
+    use std::collections::hash_map::Entry;
     let mut tosee = BinaryHeap::new();
     let mut dists: HashMap<u64, u8, Builder> = HashMap::with_hasher(Builder::default());
     tosee.push(NodeInfo {
@@ -41,7 +42,7 @@ fn astar(s: &State, t: &State) -> u8 {
     dists.insert(s.pos, 1);
     let mut count = 0;
     while let Some(node) = tosee.pop() {
-        let pathlength = *dists.get(&node.node.pos).unwrap();
+        let pathlength = dists.insert(node.node.pos, 0).unwrap();
         if pathlength == 0 {
             continue;
         }
@@ -50,22 +51,26 @@ fn astar(s: &State, t: &State) -> u8 {
             println!("{}", count);
             return pathlength - 1;
         }
-        for i in &Action::VALUES {
-            if let Some(x) = node.node + *i {
+        for &i in &Action::VALUES {
+            if let Some(x) = node.node + i {
                 let d = heur(t, &x);
-                if let Some(&prev) = dists.get(&x.pos) {
-                    if prev <= pathlength + 1 {
-                        continue;
-                    }
+                match dists.entry(x.pos) {
+                    Entry::Occupied(mut entry) => {
+                        if *entry.get() <= pathlength + 1 {
+                            continue;
+                        }
+                        entry.insert(pathlength + 1);
+                    },
+                    Entry::Vacant(entry) => {
+                        entry.insert(pathlength + 1);
+                    },
                 }
-                dists.insert(x.pos, pathlength + 1);
                 tosee.push(NodeInfo {
                     heuristic: pathlength + 1 + d,
                     node: x,
                 });
             }
         }
-        dists.insert(node.node.pos, 0);
     }
     255
 }
