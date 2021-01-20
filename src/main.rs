@@ -2,20 +2,17 @@ use astar::{Action, Builder, State};
 use std::cmp::Ordering;
 
 #[derive(PartialEq, Eq)]
-struct NodeInfo {
-    heuristic: u8,
-    node: State,
-}
+struct Node(u8, State);
 
-impl PartialOrd for NodeInfo {
+impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        (other.heuristic, self.node.pos).partial_cmp(&(self.heuristic, other.node.pos))
+        (other.0, self.1.pos).partial_cmp(&(self.0, other.1.pos))
     }
 }
 
-impl Ord for NodeInfo {
+impl Ord for Node {
     fn cmp(&self, other: &Self) -> Ordering {
-        (other.heuristic, self.node.pos).cmp(&(self.heuristic, other.node.pos))
+        (other.0, self.1.pos).cmp(&(self.0, other.1.pos))
     }
 }
 
@@ -29,30 +26,31 @@ fn old_heur(s: &State, t: &State) -> u8 {
     std::cmp::max(a.0[0], a.1[0]) + std::cmp::max(a.0[1], a.1[1])
 }
 
+#[allow(dead_code)]
 fn astar(s: &State, t: &State) -> u8 {
-    use std::collections::{BinaryHeap, HashMap};
     use std::collections::hash_map::Entry;
-    let mut tosee = BinaryHeap::new();
-    let mut dists: HashMap<u64, u8, Builder> = HashMap::with_hasher(Builder::default());
-    tosee.push(NodeInfo {
-        heuristic: heur(s, t),
-        node: *s,
-    });
+    use std::collections::{BinaryHeap, HashMap};
+
+    let mut queue = BinaryHeap::new();
+    queue.push(Node(heur(s, t), *s));
+
     //actually it is enough to store first 56 bits
+    let mut dists = HashMap::with_hasher(Builder::default());
     dists.insert(s.pos, 1);
+
     let mut count = 0;
-    while let Some(node) = tosee.pop() {
-        let pathlength = dists.insert(node.node.pos, 0).unwrap();
+    while let Some(Node(_, state)) = queue.pop() {
+        let pathlength = dists.insert(state.pos, 0).unwrap();
         if pathlength == 0 {
             continue;
         }
         count += 1;
-        if node.node == *t {
+        if state == *t {
             println!("{}", count);
             return pathlength - 1;
         }
         for &i in &Action::VALUES {
-            if let Some(x) = node.node + i {
+            if let Some(x) = state + i {
                 let d = heur(t, &x);
                 match dists.entry(x.pos) {
                     Entry::Occupied(mut entry) => {
@@ -60,21 +58,19 @@ fn astar(s: &State, t: &State) -> u8 {
                             continue;
                         }
                         entry.insert(pathlength + 1);
-                    },
+                    }
                     Entry::Vacant(entry) => {
                         entry.insert(pathlength + 1);
-                    },
+                    }
                 }
-                tosee.push(NodeInfo {
-                    heuristic: pathlength + 1 + d,
-                    node: x,
-                });
+                queue.push(Node(pathlength + 1 + d, x));
             }
         }
     }
     255
 }
 
+#[allow(dead_code)]
 fn idastar(s: &State, t: &State) -> u8 {
     let mut d = heur(s, t);
     loop {
@@ -116,6 +112,7 @@ fn search(s: State, t: &State, p: u64, d: u8) -> u8 {
 }
 
 //bidirectional pathmax
+#[allow(dead_code)]
 fn idastar_bpmx(s: &State, t: &State) -> u8 {
     let mut d = heur(s, t);
     loop {
@@ -161,6 +158,8 @@ fn test(i: usize) -> bool {
     idastar(&a, &b) == astar::ACTUAL[i]
 }
 
+#[allow(dead_code)]
+#[must_use]
 fn rand() -> State {
     use rand::SeedableRng;
     let mut rng = rand::rngs::SmallRng::from_entropy();

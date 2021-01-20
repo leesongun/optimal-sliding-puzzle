@@ -104,11 +104,6 @@ impl State {
         }
         [x / 3 + x % 3, y / 3 + y % 3]
     }
-    /// aditive pattern database
-    /// decompose to "horizontal" and "vertical" moves
-    pub fn walking(&self) -> u8 {
-        unimplemented!()
-    }
     //also provide update infos
     /*
     pub fn moves<B,F,R>(self, init: B, mut f: F) -> R

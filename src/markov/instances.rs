@@ -117,3 +117,24 @@ pub const ACTUAL: [u8; 100] = [
     49, 56, 48, 57, 54, 53, 42, 57, 53, 62, 49, 55, 44, 45, 52, 65, 54, 50, 57, 57, 46, 53, 50, 49,
     44, 54, 57, 54,
 ];
+
+/// 17 farthest instance from default position, distance 80
+pub const FARTHEST: [u64; 17] = [
+    0x04731562d9ebc8af,
+    0x04631527d9ebc8af,
+    0x05734162d9aec8bf,
+    0x01735462d9aec8bf,
+    0x04731562d9aec8bf,
+    0x04231576d9aec8bf,
+    0x04631527d9aec8bf,
+    0x04531267d9aec8bf,
+    0x046315729daec8bf,
+    0x04731526d8aec9bf,
+    0x047315628daec9bf,
+    0x042315768daec9bf,
+    0x0473156298aecdbf,
+    0x0463152798aecdbf,
+    0x0473186259aecdbf,
+    0x04731562d9bac8ef,
+    0x0473156298bacdef,
+];

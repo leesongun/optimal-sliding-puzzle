@@ -1,12 +1,17 @@
 #![no_std]
-mod action;
-mod apdb;
 mod hasher;
-mod instances;
-mod state;
+mod markov;
+pub mod search;
 mod test;
-mod walking;
-pub use action::Action;
+
+pub use markov::instances::*;
+pub use markov::Action;
+pub use markov::State;
+
 pub use hasher::Builder;
-pub use instances::*;
-pub use state::State;
+
+//todo :
+//additive pdb
+//residual pdb
+//bidirectional A*
+//gitlab ci
