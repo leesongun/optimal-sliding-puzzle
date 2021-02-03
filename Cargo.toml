@@ -10,4 +10,5 @@ edition = "2018"
 default = ["rand"]
 
 [dependencies]
+array-init = "1.0.0"
 rand = { version = "0.8.2", optional = true, features = ["small_rng"] }

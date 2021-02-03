@@ -12,7 +12,7 @@ fn old_heur(s: &State, t: &State) -> u8 {
 fn test(i: usize) -> bool {
     let a = State::new(astar::INSTANCES[i]);
     let b = State::default();
-    astar::search::idastar(&a, &b, &heur) == astar::ACTUAL[i]
+    astar::search::ch_nbs(&a, &b, &heur) == astar::ACTUAL[i]
 }
 
 #[allow(dead_code)]
