@@ -47,19 +47,23 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                 while let Some(x) = list[0][i][j].front() {
                     if dists[0].get(&x.pos) == Some(&0) {
                         list[0][i][j].pop_front();
+                    } else {
+                        break;
                     }
                 }
                 while let Some(x) = list[1][i][j].front() {
                     if dists[1].get(&x.pos) == Some(&0) {
                         list[1][i][j].pop_front();
+                    } else {
+                        break;
                     }
                 }
             }
         }
 
         let mut searchnode: Option<(State, State)> = None;
-        'largeloop: for i in 0..81 {
-            for j in 0..81 {
+        'largeloop: for i in 0..(LB as usize + 1) {
+            for j in 0..(LB as usize + 1) {
                 if list[0][i][j].is_empty() {
                     continue;
                 }
