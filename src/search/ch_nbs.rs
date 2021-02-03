@@ -18,8 +18,7 @@ impl Ord for Node {
 
 pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
     use std::collections::hash_map::Entry;
-    use std::collections::HashMap;
-    use std::collections::VecDeque;
+    use std::collections::{HashMap, VecDeque, HashSet};
 
     use array_init::array_init;
 
@@ -35,8 +34,13 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
         HashMap::with_hasher(Builder::default()),
     ];
 
-    dists[0].insert(s.pos, 1);
-    dists[1].insert(t.pos, 1);
+    let mut closed = [
+        HashSet::with_hasher(Builder::default()),
+        HashSet::with_hasher(Builder::default()),
+    ];
+
+    dists[0].insert(s.pos, 0);
+    dists[1].insert(t.pos, 0);
 
     let mut count = 0;
     let mut UB = 100;
@@ -45,14 +49,14 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
         for i in 0..81 {
             for j in 0..81 {
                 while let Some(x) = list[0][i][j].front() {
-                    if dists[0].get(&x.pos) == Some(&0) {
+                    if closed[0].contains(&x.pos) {
                         list[0][i][j].pop_front();
                     } else {
                         break;
                     }
                 }
                 while let Some(x) = list[1][i][j].front() {
-                    if dists[1].get(&x.pos) == Some(&0) {
+                    if closed[1].contains(&x.pos) {
                         list[1][i][j].pop_front();
                     } else {
                         break;
@@ -89,7 +93,8 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
         let searchnode = searchnode.unwrap();
 
         count += 1;
-        let path = dists[0].insert(searchnode.0.pos, 0).unwrap();
+        closed[0].insert(searchnode.0.pos);
+        let path = *dists[0].get(&searchnode.0.pos).unwrap();
 
         for &i in &Action::VALUES {
             if let Some(x) = searchnode.0 + i {
@@ -107,14 +112,15 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                 if let Some(y) = dists[1].get(&x.pos) {
                     //y : real length + 1
                     //path : real length
-                    UB = std::cmp::min(UB, y + path - 1);
+                    UB = std::cmp::min(UB, y + path + 1);
                 }
                 list[0][(path - h(s, &x)) as usize][(path + h(t, &x)) as usize].push_back(x);
             }
         }
 
         count += 1;
-        let path = dists[1].insert(searchnode.1.pos, 0).unwrap();
+        closed[1].insert(searchnode.1.pos);
+        let path = *dists[1].get(&searchnode.1.pos).unwrap();
 
         for &i in &Action::VALUES {
             if let Some(x) = searchnode.1 + i {
@@ -130,9 +136,7 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                     }
                 }
                 if let Some(y) = dists[0].get(&x.pos) {
-                    //y : real length + 1
-                    //path : real length
-                    UB = std::cmp::min(UB, y + path - 1);
+                    UB = std::cmp::min(UB, y + path + 1);
                 }
                 list[1][(path - h(t, &x)) as usize][(path + h(s, &x)) as usize].push_back(x);
             }
