@@ -72,7 +72,7 @@ pub fn dibbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                     if let Some(y) = dists[1].get(&x.pos) {
                         UB = std::cmp::min(UB, y + path + 1);
                     }
-                    queue[0].push(Node(2 * path + h(&x, t) - h(s, &x), x));
+                    queue[0].push(Node(2 * path + 2 + h(&x, t) - h(s, &x), x));
                 }
             }
         } else {
@@ -101,7 +101,7 @@ pub fn dibbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                     if let Some(y) = dists[0].get(&x.pos) {
                         UB = std::cmp::min(UB, y + path + 1);
                     }
-                    queue[1].push(Node(2 * path - h(&x, t) + h(s, &x), x));
+                    queue[1].push(Node(2 * path + 2 - h(&x, t) + h(s, &x), x));
                 }
             }
         }
