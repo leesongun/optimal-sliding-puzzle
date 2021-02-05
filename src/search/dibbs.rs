@@ -43,7 +43,7 @@ pub fn dibbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
     while !queue[0].is_empty() && !queue[1].is_empty() {
         let a = queue[0].peek().unwrap().0;
         let b = queue[1].peek().unwrap().0;
-        if a + b > 2 * UB {
+        if a + b >= 2 * UB {
             break;
         }
         if a < b {
