@@ -47,12 +47,12 @@ pub fn dibbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
             break;
         }
         if a < b {
-            count += 1;
             let node = queue[0].pop().unwrap().1;
 
             if closed[0].contains(&node.pos) {
                 continue;
             }
+            count += 1;
             closed[0].insert(node.pos);
             let path = *dists[0].get(&node.pos).unwrap();
 
@@ -76,12 +76,12 @@ pub fn dibbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                 }
             }
         } else {
-            count += 1;
             let node = queue[1].pop().unwrap().1;
 
             if closed[1].contains(&node.pos) {
                 continue;
             }
+            count += 1;
             closed[1].insert(node.pos);
             let path = *dists[1].get(&node.pos).unwrap();
 
