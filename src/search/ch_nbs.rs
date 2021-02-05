@@ -18,7 +18,7 @@ impl Ord for Node {
 
 pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
     use std::collections::hash_map::Entry;
-    use std::collections::{HashMap, VecDeque, HashSet};
+    use std::collections::{HashMap, HashSet, VecDeque};
 
     use array_init::array_init;
 
@@ -114,7 +114,8 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                     //path : real length
                     UB = std::cmp::min(UB, y + path + 1);
                 }
-                list[0][(path  + 1 - h(s, &x)) as usize][(path + 1 + h(t, &x)) as usize].push_back(x);
+                list[0][(path + 1 - h(s, &x)) as usize][(path + 1 + h(t, &x)) as usize]
+                    .push_back(x);
             }
         }
 
@@ -138,7 +139,8 @@ pub fn ch_nbs(s: &State, t: &State, h: &impl Fn(&State, &State) -> u8) -> u8 {
                 if let Some(y) = dists[0].get(&x.pos) {
                     UB = std::cmp::min(UB, y + path + 1);
                 }
-                list[1][(path + 1 - h(t, &x)) as usize][(path + 1 + h(s, &x)) as usize].push_back(x);
+                list[1][(path + 1 - h(t, &x)) as usize][(path + 1 + h(s, &x)) as usize]
+                    .push_back(x);
             }
         }
     }
