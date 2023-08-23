@@ -1,0 +1,10 @@
+default:
+  image: rust:latest
+
+test:
+  stage: test
+  before_script:
+  - rustup component add rustfmt clippy
+  script:
+  - cargo test
+  - cargo fmt --all -- --check
