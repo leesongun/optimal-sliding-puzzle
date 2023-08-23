@@ -7,14 +7,18 @@ command -v jq >/dev/null 2>&1 || { echo >&2 "jq is required but not installed. A
 arch=$(uname -m)
 platform=$(uname -s | tr '[:upper:]' '[:lower:]')
 
-# Specify the installation path (change this to your preferred path)
+# Specify the installation path and bin directory
 install_path="$HOME/.local/zig"
+bin_path="$HOME/.local/bin"
 
 # Clean up previous installations
 if [ -d "$install_path" ]; then
     echo "Cleaning up previous installations in $install_path"
     rm -rf "$install_path"
 fi
+
+# Create .local/bin directory if it doesn't exist
+mkdir -p "$bin_path"
 
 # Download the JSON file and extract the download URL
 URL=$(curl -s https://ziglang.org/download/index.json | jq -r '.master."'$arch'-'$platform'".tarball' 2>&1)
@@ -28,10 +32,11 @@ if [ -n "$URL" ]; then
     rmdir "$temp_dir"
     echo "Zig Nightly has been installed to $install_path"
 
-    # Add Zig binary to PATH
-    echo "export PATH=\"\$PATH:$install_path\"" >> "$HOME/.profile"
-    . "$HOME/.profile"
-    echo "Zig has been added to your PATH."
+    # Create symbolic link to zig binary in .local/bin
+    ln -s "$install_path/zig" "$bin_path/zig"
+    echo "Symbolic link to Zig binary has been created in $bin_path"
+
+    echo "Make sure $bin_path is in your PATH."
 else
     echo "Failed to get the download URL for Zig Nightly."
     exit 1
