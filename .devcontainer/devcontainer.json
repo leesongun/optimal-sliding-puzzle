@@ -4,5 +4,5 @@
             "extensions": ["ziglang.vscode-zig"]
         }
     },
-    "postCreateCommand": "./install_zig_nightly.sh"
+    "postCreateCommand": "./zig.sh"
 }
